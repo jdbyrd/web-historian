@@ -12,19 +12,20 @@ module.exports = () => {
   fs.readFile(archive.paths.list, 'utf8', (err, data) => {
     
     // array of sites.txt entries
-    const siteArray = data.replace( /\n/g, ',' ).split(',');
-    
+    // console.log('nonsplice siteArray: ', data.split(','));
+    const siteArray = data.split(',');
+    console.log('siteArray: ', siteArray);
     siteArray.forEach( site => {
       fs.exists(archive.paths.archivedSites + '/' + site, (exists) => {
         if (!exists) {
-          console.log(`${site} doesn't exist yet`);
+          console.log(`${site} doesn't exist yet!!!!`);
           http.get('http://' + data, (res) => {
             let rawData = '';
             res.setEncoding('utf8');
             res.on('data', chunk => { rawData += chunk; });
             res.on('end', () => {
-              console.log('rawData: ', rawData );
-              fs.writeFile(archive.paths.archivedSites + '/' + data, rawData, (err) =>{
+              console.log('rawData: ', rawData);
+              fs.writeFile(archive.paths.archivedSites + '/' + data.slice(0, -1), rawData, (err) =>{
                 if (err) { throw err; }
                 console.log('The file ' + data + ' has been saved!');
               });
@@ -33,8 +34,6 @@ module.exports = () => {
         }
       });
     });
-    const hasFile = dataArray.includes(userInput.toLowerCase());
-    
     if (err) { throw err; }
   });
 };

@@ -22,6 +22,7 @@ exports.handleRequest = function (req, res) {
       console.log('userInput: ', userInput);
       fs.readFile(archive.paths.list, 'utf8', (err, data) => {
         if (err) { throw err; }
+        console.log('data: ', data);
         const dataArray = data.replace( /\n/g, ',' ).split(',');
         console.log('dataArray: ', dataArray);
         // if so, render that url
@@ -39,6 +40,10 @@ exports.handleRequest = function (req, res) {
           fs.readFile(path.join(archive.paths.siteAssets, 'loading.html'), (err, data) => {
             res.writeHead(200, httpHelp.defaultHeaders);
             res.end(data);
+          });
+          fs.appendFile(archive.paths.list, `${userInput},`, (err) => {
+            if (err) { throw err; }
+            console.log(`${userInput} saved to site.txt!`);
           });
         }
         // if not, render loading.html & add to queue
