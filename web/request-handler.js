@@ -3,7 +3,6 @@ var archive = require('../helpers/archive-helpers');
 var httpHelp = require('./http-helpers');
 const fs = require('fs');
 // require more modules/folders here!
-
 exports.handleRequest = function (req, res) {
   console.log('serving request on ' + req.method + 'for url ' + req.url);
   
@@ -21,19 +20,33 @@ exports.handleRequest = function (req, res) {
     req.on('end', () => {
       const userInput = body.slice(4);
       console.log('userInput: ', userInput);
-      console.log('sites.txt: ', archive.paths.list);
       fs.readFile(archive.paths.list, 'utf8', (err, data) => {
         if (err) { throw err; }
-        console.log('data: ', data);
-        // const dataParsed = data.toString();
-        // console.log('dataParsed: ', dataParsed);
+        const dataArray = data.replace( /\n/g, ',' ).split(',');
+        console.log('dataArray: ', dataArray);
+        // if so, render that url
+        const hasFile = dataArray.includes(userInput.toLowerCase());
+        if (hasFile) {
+          console.log('We have the file: ', userInput);
+          fs.readFile((archive.paths.archivedSites + '/' + userInput), (err, data) => {
+            console.log('here is the current data from that file: ', data);
+            res.writeHead(200, httpHelp.defaultHeaders);
+            res.end(data);
+            
+          });
+        } else {
+          console.log('We don\'t have the file: ', userInput);
+          fs.readFile(path.join(archive.paths.siteAssets, 'loading.html'), (err, data) => {
+            res.writeHead(200, httpHelp.defaultHeaders);
+            res.end(data);
+          });
+        }
+        // if not, render loading.html & add to queue
+        
       });
       
     });
     
-    // if so, render that url
-    
-    // if not, render loading.html & add to queue
     
   
   }
