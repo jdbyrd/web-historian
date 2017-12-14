@@ -37,57 +37,24 @@ exports.handleRequest = function (req, res) {
       const userInput = body.slice(4);
       console.log('userInput: ', userInput);
       archive.isUrlInList( userInput, (hasFile) => {
+        console.log('hasFile: ', hasFile);
         if (hasFile) {
           httpHelp.serveAssets(res, userInput, (err, data) => {
+            
             res.writeHead(200, httpHelp.defaultHeaders);
-            res.end(data);
+            res.end(data.toString());
           });
         } else {
-          // httpHelp.serveAssets(res, 'loading.html', (err, data) => {
-          // if (err) { throw err; }
-          archive.addUrlToList(userInput, () => {
-            res.writeHead(302, httpHelp.defaultHeaders);
-            res.end();
+          httpHelp.serveAssets(res, 'loading.html', (err, data) => {
+            console.log('loading server assets: ', data);
+            if (err) { throw err; }
+            archive.addUrlToList(userInput, () => {
+              res.writeHead(302, httpHelp.defaultHeaders);
+              res.end(data.toString());
+            });
           });
-          // });
         }
       });
     });
-      
-    //   fs.readFile(archive.paths.list, 'utf8', (err, data) => {
-    //     if (err) { throw err; }
-    //     console.log('data: ', data);
-    //     const dataArray = data.replace( /\n/g, ',' ).split(',');
-    //     console.log('dataArray: ', dataArray);
-    //     // if so, render that url
-    //     const hasFile = dataArray.includes(userInput.toLowerCase());
-    //     if (hasFile) {
-    //       console.log('We have the file: ', userInput);
-    //       fs.readFile((archive.paths.archivedSites + '/' + userInput), (err, data) => {
-    //         console.log('here is the current data from that file: ', data);
-    //         res.writeHead(200, httpHelp.defaultHeaders);
-    //         res.end(data);
-            
-    //       });
-    //     } else {
-    //       console.log('We don\'t have the file: ', userInput);
-    //       fs.readFile(path.join(archive.paths.siteAssets, 'loading.html'), (err, data) => {
-    //         res.writeHead(200, httpHelp.defaultHeaders);
-    //         res.end(data);
-    //       });
-    //       fs.appendFile(archive.paths.list, `${userInput},`, (err) => {
-    //         if (err) { throw err; }
-    //         console.log(`${userInput} saved to site.txt!`);
-    //       });
-    //     }
-    //     // if not, render loading.html & add to queue
-        
-    //   });
-      
-    // });
-    
-    
-  
   }
-  
 };

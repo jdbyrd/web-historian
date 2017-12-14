@@ -11,7 +11,6 @@ module.exports = function() {
   
   archive.readListOfUrls((urlList) => {
     archive.downloadUrls(urlList);
-    archive.clearUrls();
   });
   
   

@@ -35,8 +35,11 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
+  console.log('isUrlInList called!');
   fs.readFile(paths.list, 'utf8', (err, siteList) => {
     const urlList = siteList.split('\n');
+    console.log('urlList: ', urlList);
+    console.log('url: ', url);
     const hasFile = urlList.includes(url.toLowerCase());
     callback(hasFile);
   });

@@ -14,7 +14,7 @@ exports.serveAssets = function(res, asset, callback) {
 
   let basePath = '';
   
-  if (asset === 'index.html') {
+  if (asset === 'index.html' || asset === 'loading.html') {
     basePath = archive.paths.siteAssets;
   } else {
     basePath = archive.paths.archivedSites;
