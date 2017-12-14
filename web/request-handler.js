@@ -36,21 +36,34 @@ exports.handleRequest = function (req, res) {
     req.on('end', () => {
       const userInput = body.slice(4);
       console.log('userInput: ', userInput);
-      archive.isUrlInList( userInput, (hasFile) => {
+      archive.isUrlInArchives( userInput, (hasFile) => {
         console.log('hasFile: ', hasFile);
         if (hasFile) {
           httpHelp.serveAssets(res, userInput, (err, data) => {
-            
-            res.writeHead(200, httpHelp.defaultHeaders);
-            res.end(data.toString());
+            console.log('data', data);
+            archive.isUrlInList(userInput, (hasFileInList) => {
+              if (!hasFileInList) {
+                archive.addUrlToList(userInput, () => {
+                  res.writeHead(302, httpHelp.defaultHeaders);
+                  res.end(data.toString());
+                });
+              } else {
+                res.writeHead(200, httpHelp.defaultHeaders);
+                res.end(data.toString());
+              }
+            });
           });
         } else {
           httpHelp.serveAssets(res, 'loading.html', (err, data) => {
             console.log('loading server assets: ', data);
             if (err) { throw err; }
-            archive.addUrlToList(userInput, () => {
-              res.writeHead(302, httpHelp.defaultHeaders);
-              res.end(data.toString());
+            archive.isUrlInList(userInput, (hasFileInList) => {
+              if (!hasFileInList) {
+                archive.addUrlToList(userInput, () => {
+                  res.writeHead(302, httpHelp.defaultHeaders);
+                  res.end(data.toString());
+                });
+              }
             });
           });
         }

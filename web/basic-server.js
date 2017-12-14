@@ -2,12 +2,18 @@ var http = require('http');
 var handler = require('./request-handler');
 var initialize = require('./initialize.js');
 var htmlFetcher = require('../workers/htmlFetcher');
+var cron = require('node-cron');
+ 
+
 
 // Why do you think we have this here?
 // HINT: It has to do with what's in .gitignore
 initialize('./archives');
 
-setInterval(htmlFetcher, 1000);
+//setInterval(htmlFetcher, 1000);
+cron.schedule('30 * * * * *', function() {
+  htmlFetcher();
+});
 
 var port = 8080;
 var ip = '127.0.0.1';

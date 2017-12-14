@@ -154,7 +154,7 @@ describe('archive helpers', function() {
         const archivedSites = fs.readdirSync(archive.paths.archivedSites);
         expect(urlArray.every(url => archivedSites.includes(url))).to.be.true;
         done();
-      }, 500);
+      }, 600);
     });
   });
 });
