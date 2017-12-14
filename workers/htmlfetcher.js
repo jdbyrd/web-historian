@@ -7,35 +7,20 @@ const fs = require('fs');
 const http = require('http');
 var archive = require('../helpers/archive-helpers');
 
-module.exports = () => {
+module.exports = function() {
   
-  fs.readFile(archive.paths.list, 'utf8', (err, data) => {
-    
-    // array of sites.txt entries
-    // console.log('nonsplice siteArray: ', data.split(','));
-    const siteArray = data.split(',');
-    console.log('siteArray: ', siteArray);
-    siteArray.forEach( site => {
-      fs.exists(archive.paths.archivedSites + '/' + site, (exists) => {
-        if (!exists) {
-          console.log(`${site} doesn't exist yet!!!!`);
-          http.get('http://' + data, (res) => {
-            let rawData = '';
-            res.setEncoding('utf8');
-            res.on('data', chunk => { rawData += chunk; });
-            res.on('end', () => {
-              console.log('rawData: ', rawData);
-              fs.writeFile(archive.paths.archivedSites + '/' + data.slice(0, -1), rawData, (err) =>{
-                if (err) { throw err; }
-                console.log('The file ' + data + ' has been saved!');
-              });
-            });
-          });
-        }
-      });
-    });
-    if (err) { throw err; }
+  archive.readListOfUrls((urlList) => {
+    archive.downloadUrls(urlList);
+    archive.clearUrls();
   });
+  
+  
+  // fs.readFile(paths.list, 'utf8', (err, siteList) => {
+  //   const siteArray = siteList.split('\n');
+  //   console.log('siteArray: ', siteArray);
+
+  //   if (err) { throw err; }
+  // });
 };
 
 
